@@ -17,6 +17,7 @@
 package com.expediagroup.graphql.generator
 
 import com.expediagroup.graphql.generator.exceptions.GraphQLKotlinException
+import com.expediagroup.graphql.generator.execution.TypeMixin
 import graphql.schema.GraphQLSchema
 
 /**
@@ -36,7 +37,8 @@ fun toSchema(
     queries: List<TopLevelObject>,
     mutations: List<TopLevelObject> = emptyList(),
     subscriptions: List<TopLevelObject> = emptyList(),
-    schemaObject: TopLevelObject? = null
+    schemaObject: TopLevelObject? = null,
+    typeMixins: List<TypeMixin> = emptyList()
 ): GraphQLSchema {
     val generator = SchemaGenerator(config)
     return generator.use {
@@ -44,7 +46,8 @@ fun toSchema(
             queries = queries,
             mutations = mutations,
             subscriptions = subscriptions,
-            schemaObject = schemaObject
+            schemaObject = schemaObject,
+            typeMixins = typeMixins
         )
     }
 }

@@ -17,6 +17,7 @@
 package com.expediagroup.graphql.generator
 
 import com.expediagroup.graphql.generator.exceptions.InvalidPackagesException
+import com.expediagroup.graphql.generator.execution.TypeMixin
 import com.expediagroup.graphql.generator.internal.extensions.getGraphQLDescription
 import com.expediagroup.graphql.generator.internal.extensions.getKClass
 import com.expediagroup.graphql.generator.internal.state.AdditionalType
@@ -52,6 +53,7 @@ import kotlin.reflect.full.createType
 open class SchemaGenerator(internal val config: SchemaGeneratorConfig) : Closeable {
 
     internal val additionalTypes: MutableSet<AdditionalType> = mutableSetOf()
+    internal val typeMixins: MutableMap<KClass<*>, List<TypeMixin>> = mutableMapOf()
     internal val classScanner = ClassScanner(config.supportedPackages)
     internal val cache = TypesCache(config.supportedPackages)
     internal val codeRegistry = GraphQLCodeRegistry.newCodeRegistry()
@@ -75,11 +77,13 @@ open class SchemaGenerator(internal val config: SchemaGeneratorConfig) : Closeab
         subscriptions: List<TopLevelObject> = emptyList(),
         additionalTypes: Set<KType> = emptySet(),
         additionalInputTypes: Set<KType> = emptySet(),
+        typeMixins: List<TypeMixin> = emptyList(),
         schemaObject: TopLevelObject? = null
     ): GraphQLSchema {
 
         this.additionalTypes.addAll(additionalTypes.map { AdditionalType(it, inputType = false) })
         this.additionalTypes.addAll(additionalInputTypes.map { AdditionalType(it, inputType = true) })
+        this.typeMixins.putAll(typeMixins.groupBy { it.supports() })
 
         if (!config.introspectionEnabled) {
             codeRegistry.fieldVisibility(NoIntrospectionGraphqlFieldVisibility.NO_INTROSPECTION_FIELD_VISIBILITY)

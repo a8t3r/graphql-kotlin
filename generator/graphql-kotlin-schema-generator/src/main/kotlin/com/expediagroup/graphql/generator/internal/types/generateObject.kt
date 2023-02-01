@@ -63,5 +63,11 @@ internal fun generateObject(generator: SchemaGenerator, kClass: KClass<*>): Grap
     kClass.getValidFunctions(generator.config.hooks)
         .forEach { builder.field(generateFunction(generator, it, name)) }
 
+    generator.typeMixins[kClass].orEmpty()
+        .flatMap { mixin -> mixin::class.getValidFunctions(generator.config.hooks).map { mixin to it } }
+        .forEach { (mixin, fn) ->
+            builder.field(generateFunction(generator, fn, name, target = mixin))
+        }
+
     return generator.config.hooks.onRewireGraphQLType(builder.build(), null, generator.codeRegistry).safeCast()
 }
