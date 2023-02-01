@@ -18,6 +18,7 @@ package com.expediagroup.graphql.generator.internal.types
 
 import com.expediagroup.graphql.generator.SchemaGenerator
 import com.expediagroup.graphql.generator.annotations.GraphQLValidObjectLocations
+import com.expediagroup.graphql.generator.execution.TypeMixin
 import com.expediagroup.graphql.generator.extensions.unwrapType
 import com.expediagroup.graphql.generator.internal.extensions.getGraphQLDescription
 import com.expediagroup.graphql.generator.internal.extensions.getSimpleName
@@ -65,6 +66,7 @@ internal fun generateObject(generator: SchemaGenerator, kClass: KClass<*>): Grap
 
     generator.typeMixins[kClass].orEmpty()
         .flatMap { mixin -> mixin::class.getValidFunctions(generator.config.hooks).map { mixin to it } }
+        .filter { (_, fn) -> fn.name != TypeMixin::supports.name }
         .forEach { (mixin, fn) ->
             builder.field(generateFunction(generator, fn, name, target = mixin))
         }
