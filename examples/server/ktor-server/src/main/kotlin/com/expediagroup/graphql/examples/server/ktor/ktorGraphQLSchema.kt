@@ -21,6 +21,7 @@ import com.expediagroup.graphql.examples.server.ktor.schema.CourseQueryService
 import com.expediagroup.graphql.examples.server.ktor.schema.HelloQueryService
 import com.expediagroup.graphql.examples.server.ktor.schema.LoginMutationService
 import com.expediagroup.graphql.examples.server.ktor.schema.UniversityQueryService
+import com.expediagroup.graphql.examples.server.ktor.schema.models.UniversityMixin
 import com.expediagroup.graphql.generator.SchemaGeneratorConfig
 import com.expediagroup.graphql.generator.TopLevelObject
 import com.expediagroup.graphql.generator.scalars.IDValueUnboxer
@@ -40,7 +41,8 @@ private val queries = listOf(
     TopLevelObject(UniversityQueryService())
 )
 private val mutations = listOf(TopLevelObject(LoginMutationService()))
-val graphQLSchema = toSchema(config, queries, mutations)
+private val typeMixins = listOf(UniversityMixin())
+val graphQLSchema = toSchema(config, queries, mutations, typeMixins = typeMixins)
 
 fun getGraphQLObject(): GraphQL = GraphQL.newGraphQL(graphQLSchema)
     .valueUnboxer(IDValueUnboxer())
